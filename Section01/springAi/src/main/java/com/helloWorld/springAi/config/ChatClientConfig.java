@@ -1,8 +1,12 @@
 package com.helloWorld.springAi.config;
 
+import com.helloWorld.springAi.advisors.TokenUsageAuditAdvisor;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.SimpleLoggerAdvisor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.util.List;
 
 @Configuration
 public class ChatClientConfig {
@@ -10,9 +14,15 @@ public class ChatClientConfig {
     @Bean
     ChatClient chatClient (ChatClient.Builder chatClientBuilder){
         return chatClientBuilder
+                .defaultAdvisors(List.of(new SimpleLoggerAdvisor(),
+                        new TokenUsageAuditAdvisor()))
                 .defaultSystem("""
-                        You are the AI HR Assistant for Click Technologies.\s 
-                        Your goal is to provide accurate, empathetic, and professional support to employees and management regarding company policies, benefits, and workplace procedures.\s
+                        You are an internal HR assistant. Your role is to help\s
+                        employees with questions related to HR policies, such as\s
+                        leave policies, working hours, benefits, and code of conduct.
+                        If a user asks for help with anything outside of these topics,\s
+                        kindly inform them that you can only assist with queries related to\s
+                        HR policies.
                         """)
                 .build();
     }
